@@ -1,15 +1,20 @@
 package com.vijay.clownmail.controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vijay.clownmail.Utils.JwtUtil;
 import com.vijay.clownmail.models.Mail;
 import com.vijay.clownmail.services.MailService;
 
@@ -22,12 +27,32 @@ public class MailController {
 	
 	
 	@PostMapping("/send")
-	public Mail sendMail(@RequestBody Mail mail) {
-		return mailService.sendMail(mail);
+	public ResponseEntity<?> sendMail(@RequestHeader("Authorization") String authHeader, @RequestBody Mail mail) {
+		String token = authHeader.replace("Bearer ", "");
+		String senderEmail = JwtUtil.validateToken(token);
+		
+		if(senderEmail == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("Invalid or expired token");
+		}
+		
+		mail.setFromEmail(senderEmail);
+		
+		mailService.sendMail(mail);
+		return ResponseEntity.ok("Mail sent successfully from " + senderEmail);
 	}
 	
-	@GetMapping("/inbox/{email}")
-	public Optional<Mail> getInbox(@PathVariable String email){
-		return mailService.getInbox(email);
+	@GetMapping("/inbox")
+	public ResponseEntity<?> viewInbox(@RequestHeader("Authorization") String authHeader){
+		
+		String token = authHeader.replace("Bearer ", "");
+		String userEmail = JwtUtil.validateToken(token);
+		
+		if(userEmail == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body("Invalid or expired token");
+		}
+		Optional<Mail> inbox = mailService.getInbox(userEmail);
+		return ResponseEntity.ok(inbox);
 	}
 }
