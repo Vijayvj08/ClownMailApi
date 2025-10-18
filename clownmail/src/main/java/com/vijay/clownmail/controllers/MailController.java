@@ -1,13 +1,11 @@
 package com.vijay.clownmail.controllers;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vijay.clownmail.Utils.JwtUtil;
 import com.vijay.clownmail.models.Mail;
 import com.vijay.clownmail.services.MailService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/mails")
@@ -43,10 +43,10 @@ public class MailController {
 	}
 	
 	@GetMapping("/inbox")
-	public ResponseEntity<?> viewInbox(@RequestHeader("Authorization") String authHeader){
+	public ResponseEntity<?> viewInbox(HttpServletRequest request){
 		
-		String token = authHeader.replace("Bearer ", "");
-		String userEmail = JwtUtil.validateToken(token);
+
+		String userEmail = (String) request.getAttribute("userEmail");
 		
 		if(userEmail == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
