@@ -13,13 +13,30 @@ public class MailService {
 	
 	@Autowired
 	private MailRepository mailRepository;
+	//send mail
+	public boolean sendMail(Mail mail, String fromEmail) {
+        try {
+            // logic to send mail or save in DB
+        	mail.setFromEmail(fromEmail);
+        	mailRepository.save(mail);
+            System.out.println("Mail sent from " + fromEmail + " to " + mail.getToEmail());
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 	
-	
-	public Mail sendMail(Mail mail) {
-		return mailRepository.save(mail);
+	//User inbox
+	public Optional<Mail> getInbox(String email) {
+	    return mailRepository.findByToEmail(email);
 	}
+
 	
-	public Optional<Mail> getInbox(String email){
-		return mailRepository.findByToEmail(email);
+	
+	//send emails from user
+	public Optional<Mail> getSent(String email){
+		return mailRepository.findByFromEmail(email);
 	}
 }

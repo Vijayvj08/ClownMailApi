@@ -10,4 +10,5 @@ import com.vijay.clownmail.models.Mail;
 @Repository
 public interface MailRepository extends JpaRepository<Mail, Long>{
 	Optional<Mail> findByToEmail(String toEmail);
+	Optional<Mail> findByFromEmail(String email);
 }

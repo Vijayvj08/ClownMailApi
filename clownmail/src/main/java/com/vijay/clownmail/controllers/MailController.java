@@ -1,10 +1,13 @@
-package com.vijay.clownmail.controllers;
+	package com.vijay.clownmail.controllers;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,11 +15,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vijay.clownmail.Utils.JwtUtil;
+import com.vijay.clownmail.Security.JwtUtil;
 import com.vijay.clownmail.models.Mail;
 import com.vijay.clownmail.services.MailService;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 
 @RestController
 @RequestMapping("/api/mails")
@@ -24,35 +28,38 @@ public class MailController {
 	
 	@Autowired
 	private MailService mailService;
+	@Autowired
+	private JwtUtil jwtUtil;
 	
 	
 	@PostMapping("/send")
-	public ResponseEntity<?> sendMail(@RequestHeader("Authorization") String authHeader, @RequestBody Mail mail) {
-		String token = authHeader.replace("Bearer ", "");
-		String senderEmail = JwtUtil.validateToken(token);
-		
-		if(senderEmail == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body("Invalid or expired token");
-		}
-		
-		mail.setFromEmail(senderEmail);
-		
-		mailService.sendMail(mail);
-		return ResponseEntity.ok("Mail sent successfully from " + senderEmail);
+	public ResponseEntity<?> sendMail(@RequestBody Mail mail, HttpServletRequest request) {
+	    String authHeader = request.getHeader("Authorization");
+	    String token = authHeader.substring(7);
+	    String userEmail = jwtUtil.extractEmail(token);
+
+	    boolean sent = mailService.sendMail(mail, userEmail);
+
+	    if (sent) {
+	        return ResponseEntity.ok(Map.of(
+	            "status", "success",
+	            "message", "Mail sent successfully",
+	            "from", userEmail,
+	            "to", mail.getToEmail()
+	        ));
+	    } else {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(Map.of("status", "error", "message", "Failed to send mail"));
+	    }
 	}
+
 	
 	@GetMapping("/inbox")
-	public ResponseEntity<?> viewInbox(HttpServletRequest request){
-		
+	public ResponseEntity<Optional<Mail>> Inbox(@RequestHeader("Authorization") String authHeader){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    String email = auth.getName(); // current user's email
+	    Optional<Mail> inbox = mailService.getInbox(email);
+	    return ResponseEntity.ok(inbox);
 
-		String userEmail = (String) request.getAttribute("userEmail");
-		
-		if(userEmail == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body("Invalid or expired token");
-		}
-		Optional<Mail> inbox = mailService.getInbox(userEmail);
-		return ResponseEntity.ok(inbox);
 	}
 }
