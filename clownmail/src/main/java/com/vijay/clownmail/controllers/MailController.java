@@ -1,5 +1,6 @@
 	package com.vijay.clownmail.controllers;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vijay.clownmail.Security.JwtUtil;
@@ -62,4 +64,11 @@ public class MailController {
 	    return ResponseEntity.ok(inbox);
 
 	}
+	
+	 @GetMapping("/search")
+	    public List<Mail> searchMails(@RequestParam String toEmail, HttpServletRequest request) {
+	        String token = request.getHeader("Authorization").substring(7);
+	        String userEmail = jwtUtil.extractEmail(token);
+	        return mailService.searchMailsByRecipient(userEmail, toEmail);
+	    }
 }

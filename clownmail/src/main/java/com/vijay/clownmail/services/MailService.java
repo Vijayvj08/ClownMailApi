@@ -1,5 +1,6 @@
 package com.vijay.clownmail.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,9 @@ public class MailService {
 	    return mailRepository.findByToEmail(email);
 	}
 
-	
+	public List<Mail> searchMailsByRecipient(String fromEmail, String toEmail) {
+        return mailRepository.findByFromEmailAndToEmailContaining(fromEmail, toEmail);
+    }
 	
 	//send emails from user
 	public Optional<Mail> getSent(String email){
