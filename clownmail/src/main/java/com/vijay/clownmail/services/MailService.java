@@ -20,7 +20,7 @@ public class MailService {
             // logic to send mail or save in DB
         	mail.setFromEmail(fromEmail);
         	mailRepository.save(mail);
-            System.out.println("Mail sent from " + fromEmail + " to " + mail.getToEmail());
+//            System.out.println("Mail sent from " + fromEmail + " to " + mail.getToEmail());
             return true;
         } catch (Exception e) {
             e.printStackTrace();

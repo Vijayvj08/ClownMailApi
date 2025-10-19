@@ -47,8 +47,7 @@ public class AuthController {
 	                        "status", "success",
 	                        "message", "User registered successfully",
 	                        "userId", savedUser.getId(),
-	                        "email", savedUser.getEmail()
-	                ));
+	                        "email", savedUser.getEmail()));
 	    }
 	
 	@PostMapping("/login")

@@ -29,15 +29,15 @@ public class UserService {
 	        return userRepository.save(user);
 	    }
 
-	    public String login(Users user) {
-	        Optional<Users> userOpt = userRepository.findByEmail(user.getEmail());
-
-	        if (userOpt.isPresent()) {
-	            Users users = userOpt.get();
-	            if (passwordEncoder.matches(user.getPassword(), user.getPassword())) {
-	                return jwtUtil.generateToken(users.getEmail());
-	            }
-	        }
-	        return null;
-	    }
+//	    public String login(Users user) {
+//	        Optional<Users> userOpt = userRepository.findByEmail(user.getEmail());
+//
+//	        if (userOpt.isPresent()) {
+//	            Users users = userOpt.get();
+//	            if (passwordEncoder.matches(user.getPassword(), user.getPassword())) {
+//	                return jwtUtil.generateToken(users.getEmail());
+//	            }
+//	        }
+//	        return null;
+//	    }
 }
