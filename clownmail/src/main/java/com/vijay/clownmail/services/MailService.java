@@ -32,6 +32,7 @@ public class MailService {
 	    return mailRepository.findByToEmail(toemail);
 	}
 
+	//search sender mails
 	public List<Mail> searchMailsByRecipient(String fromEmail, String toEmail) {
         return mailRepository.findByFromEmailAndToEmailContaining(fromEmail, toEmail);
     }
@@ -41,3 +42,4 @@ public class MailService {
 	        return mailRepository.findByFromEmail(email);
 	    }
 }
+
