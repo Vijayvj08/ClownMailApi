@@ -17,8 +17,8 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
-	 @Autowired
-	    private JwtUtil jwtUtil;
+//	 @Autowired
+//	    private JwtUtil jwtUtil;
 
 	    public boolean existsByEmail(String email) {
 	        return userRepository.findByEmail(email).isPresent();

@@ -1,8 +1,6 @@
 package com.vijay.clownmail.services;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,16 +28,16 @@ public class MailService {
 
 	
 	//User inbox
-	public Optional<Mail> getInbox(String email) {
-	    return mailRepository.findByToEmail(email);
+	public List<Mail> getInbox(String toemail) {
+	    return mailRepository.findByToEmail(toemail);
 	}
 
 	public List<Mail> searchMailsByRecipient(String fromEmail, String toEmail) {
         return mailRepository.findByFromEmailAndToEmailContaining(fromEmail, toEmail);
     }
 	
-	//send emails from user
-	public Optional<Mail> getSent(String email){
-		return mailRepository.findByFromEmail(email);
-	}
+	//view sent mails
+	 public List<Mail> getSentMails(String email) {
+	        return mailRepository.findByFromEmail(email);
+	    }
 }

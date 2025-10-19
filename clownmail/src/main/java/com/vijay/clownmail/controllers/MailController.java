@@ -2,8 +2,6 @@
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,10 +55,10 @@ public class MailController {
 
 	
 	@GetMapping("/inbox")
-	public ResponseEntity<Optional<Mail>> Inbox(@RequestHeader("Authorization") String authHeader){
+	public ResponseEntity<List<Mail>> Inbox(@RequestHeader("Authorization") String authHeader){
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    String email = auth.getName(); // current user's email
-	    Optional<Mail> inbox = mailService.getInbox(email);
+	    List<Mail> inbox = mailService.getInbox(email);
 	    return ResponseEntity.ok(inbox);
 
 	}
@@ -71,4 +69,12 @@ public class MailController {
 	        String userEmail = jwtUtil.extractEmail(token);
 	        return mailService.searchMailsByRecipient(userEmail, toEmail);
 	    }
+	 
+	 @GetMapping("/sent")
+		public ResponseEntity<List<Mail>> sentMail(@RequestHeader("Authorization") String authHeader){
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		    String email = auth.getName(); // current user's email
+		    List<Mail> sent = mailService.getSentMails(email);
+		    return ResponseEntity.ok(sent);
+	 }
 }
